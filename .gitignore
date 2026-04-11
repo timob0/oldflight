@@ -1,0 +1,7 @@
+.DS_Store
+oldflight-bin
+*.o
+*.d
+obj/processed-korb-256.ppm
+build/
+build-vintage/

@@ -33,8 +33,16 @@
 #define NET_MAX_PEERS      15
 #define NET_TIMEOUT_TICKS  180          /* ~3 s at 60 fps */
 
+#if defined(_MSC_VER)
 #pragma pack(push, 1)
-typedef struct {
+#define OFLT_PACKED
+#elif defined(__GNUC__)
+#define OFLT_PACKED __attribute__((packed))
+#else
+#define OFLT_PACKED
+#endif
+
+typedef struct OFLT_PACKED {
     unsigned int   magic;
     unsigned int   planeid;
     unsigned short type;
@@ -53,7 +61,10 @@ typedef struct {
     float          rudder;
     float          elevator;
 } NetPacket;
+
+#if defined(_MSC_VER)
 #pragma pack(pop)
+#endif
 
 /* ------------------------------------------------------------------ */
 /* State                                                                */

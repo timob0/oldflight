@@ -3,14 +3,11 @@
 #include "colors.h"
 #include "maths.h"
 struct plane;
-typedef struct plane *Plane;
-#include "flight.h"
-
+struct gameState;
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4244)
 #endif
-
 
 void set_tree(int cx, int cy, int cz, struct gameState *gs);
 void make_forest(int x, int y, int size, struct gameState *gs);
@@ -26,7 +23,7 @@ void sink_sort(register int n, int *array, int *array_tag);
 void make_buildings(int eye_x, int eye_y, int eye_z, struct gameState* gs);
 void set_truck_route(int cx, int cy, int cz, float speed, int route_count, const int *route_x, const int *route_z, struct gameState *gs);
 void update_ground_vehicles(struct gameState *gs);
-void draw_shadow(Plane pp, int nnear);
+void draw_shadow(struct plane *pp, int nnear);
 void genstripe(GLint x1, GLint y1, GLint x2, GLint y2);
 void map_daynight(int daytime);
 void init_shade(int i, int shade);

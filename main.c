@@ -1,4 +1,4 @@
-﻿#include "main.h"
+#include "main.h"
 #include "net.h"
 #include <string.h>
 #ifndef W32
@@ -11,7 +11,8 @@ static char *net_host = NULL;
 static char lpp_name_override[NAME_LENGTH + 1] = {0};
 
 static void parse_command_line(int argc, char *argv[]) {
-	for (int i = 1; i < argc; i++) {
+	int i;
+	for (i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "-i") && i + 1 < argc) {
 			infile = argv[++i];
 		}
@@ -61,12 +62,13 @@ static void end_overlay_2d(void) {
 }
 
 static void draw_help_overlay(void) {
+	int u;
 	float ystart = YMAXSCREEN - 20.0f;
 	begin_overlay_2d();
 	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 	draw_rect(20, 20, XMAXSCREEN - 40, YMAXSCREEN - 40);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	for (int u = 0; u < 25; u++) {
+	for (u = 0; u < 25; u++) {
 		gl_print(helpmsg[u], 40, ystart);
 		ystart -= 16.0f;
 	}
@@ -184,6 +186,7 @@ void mouse_click(int button, int state, int x, int y) {
 }
 
 void draw_presentation(void) {
+	int u;
 	float ystart = YMAXSCREEN - 10.0f;
 	char string[255];
 
@@ -204,13 +207,13 @@ void draw_presentation(void) {
 	glColor3f(1.0, 1.0, 1.0);
 	glLoadIdentity();
 	if (message == 1) {
-		for (int u = 0; u < 24; u++) {
+		for (u = 0; u < 24; u++) {
 			sprintf(string, "%s", helpmsg[u]);
 			gl_print(string, XMAXSCREEN / 2 - 350, ystart -= 13.0);
 		}
 	}
 	else {
-		for (int u = 0; u < 24; u++) {
+		for (u = 0; u < 24; u++) {
 			sprintf(string, "%s", plane_menu[u]);
 			gl_print(string, XMAXSCREEN / 2 - 350, ystart -= 13.0);
 		}
@@ -616,7 +619,7 @@ void flight_simulation() {
 		zetimer2 = glutGet(GLUT_ELAPSED_TIME);
 		//printf("time simul and render %d %d \n", zetimer2 - zetimer1, (1000 / lgs->tps) - (zetimer2 - zetimer1));
 		get_time();
-		glutTimerFunc(fabs((1000 / lgs->tps) - (zetimer2 - zetimer1)) , flight_simulation, 0);
+		glutTimerFunc(abs((1000 / lgs->tps) - (zetimer2 - zetimer1)) , flight_simulation, 0);
 	}
 }
 void flight_demo_simulation(int va) {

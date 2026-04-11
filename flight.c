@@ -1498,8 +1498,9 @@ void simulation(struct gameState* gs, struct plane* pp, int msx, int msy, int XM
 
 // Draws all planes minus the own plane if view is Pilot
 static void draw_all_planes(gameState *gs) {
+	int rpi;
 	enable_depth_test();
-	for (int rpi = 0; rpi < gs->number_planes; rpi++) {
+	for (rpi = 0; rpi < gs->number_planes; rpi++) {
 		Plane rp = &gs->planes[rpi];
 		if ((gs->view_switch == PILOTE && rpi == 0) || !rp->alive) {
 			continue;
@@ -1510,6 +1511,7 @@ static void draw_all_planes(gameState *gs) {
 }
 
 void draw_game(gameState * gs, plane *pp) {
+	plane *target;
 	glPolygonMode(GL_FRONT_AND_BACK, gs->polymod);
 
 	// Depending on selected view, setup the camera
@@ -1545,7 +1547,7 @@ void draw_game(gameState * gs, plane *pp) {
 
 	case TOWER:
 		enable_depth_test();
-		plane *target = &gs->planes[gs->tower_target_index];
+		target = &gs->planes[gs->tower_target_index];
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		gluLookAt(gs->tx, gs->ty, gs->tz, target->x, target->y, target->z, 0, 1, 0);
@@ -1664,6 +1666,10 @@ void draw_plane_speed_vector(gameState *gs, plane *pp) {
 void draw_debug_text(gameState *gs, plane *pp, int msx, int msy) {
 	char string[255];
 	float temp;
+	float ystart;
+	int airspeed;
+	float effective_qs;
+	int o;
 	if (glIsList(DEBUG_TEXT)) {
 		glDeleteLists(DEBUG_TEXT, 1);
 	}
@@ -1676,8 +1682,8 @@ void draw_debug_text(gameState *gs, plane *pp, int msx, int msy) {
 	glPushMatrix();
 	glLoadIdentity();
 
-	float ystart = 0.95f;
-	int airspeed = -(int)(pp->fps_knots * pp->vz);
+	ystart = 0.95f;
+	airspeed = -(int)(pp->fps_knots * pp->vz);
 	setColor(white);
 	sprintf(string, "tick: %d, FPS: %f TPS: %d DELAY: %d ELEVF:%f", gs->ticks, gs->fps, gs->tps, DELAY, pp->ELEVF);
 	gl_print(string, -1.0, ystart -= .05);
@@ -1711,7 +1717,7 @@ void draw_debug_text(gameState *gs, plane *pp, int msx, int msy) {
 	sprintf(string, "Thrust:   %21.2f | %21.2f", -.01 / gs->tps / gs->tps * pp->thrust * pp->Mthrust, .01 * pp->thrust * pp->Mthrust * pp->inverse_mass * gs->tps *gs->tps);
 	gl_print(string, -1.0, ystart -= .05);
 
-	float effective_qs = debug_effective_qs(pp);
+	effective_qs = debug_effective_qs(pp);
 	sprintf(string, "Lift:     %14.2f%7.2f        angle:%6.2f", pp->vz * pp->Cl * effective_qs * temp, -pp->vy * pp->Cl * effective_qs * temp, 57.3 * (pp->ae - pp->tilt_factor));
 	gl_print(string, -1.0, ystart -= .05);
 
@@ -1739,14 +1745,14 @@ void draw_debug_text(gameState *gs, plane *pp, int msx, int msy) {
 
 	sprintf(string, "%s", "ptw");
 	gl_print(string, -1.0, ystart -= .05);
-	for (int o = 0; o < 4; o++) {
+	for (o = 0; o < 4; o++) {
 		sprintf(string, "PTW[%d]=[%f,%f,%f,%f]", o, pp->ptw[o][0], pp->ptw[o][1], pp->ptw[o][2], pp->ptw[o][3]);
 		gl_print(string, -1.0, ystart -= .05);
 	}
 
 	sprintf(string, "%s", "incremental");
 	gl_print(string, -1.0, ystart -= .05);
-	for (int o = 0; o < 4; o++) {
+	for (o = 0; o < 4; o++) {
 		sprintf(string, "INC[%d]=[%f,%f,%f,%f]", o, pp->incremental[o][0], pp->incremental[o][1], pp->incremental[o][2], pp->incremental[o][3]);
 		gl_print(string, -1.0, ystart -= .05);
 	}

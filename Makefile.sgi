@@ -1,0 +1,71 @@
+CC = cc
+CFLAGS = -O2
+CPPFLAGS = -I.
+LDFLAGS =
+LDLIBS = -lGL -lGLU -lglut -lm
+TARGET = oldflight-bin
+
+SRCS = \
+	b747.c \
+	balloon.c \
+	blimp.c \
+	c150.c \
+	color.c \
+	comm.c \
+	demo.c \
+	draw_logo.c \
+	f15.c \
+	f16.c \
+	f16w.c \
+	f18.c \
+	flight.c \
+	graph.c \
+	helicopter.c \
+	irisgl.c \
+	main.c \
+	maths.c \
+	meters.c \
+	net.c \
+	object.c \
+	p38.c \
+	p38w.c \
+	truck.c \
+	uflight.c
+
+OBJS = \
+	b747.o \
+	balloon.o \
+	blimp.o \
+	c150.o \
+	color.o \
+	comm.o \
+	demo.o \
+	draw_logo.o \
+	f15.o \
+	f16.o \
+	f16w.o \
+	f18.o \
+	flight.o \
+	graph.o \
+	helicopter.o \
+	irisgl.o \
+	main.o \
+	maths.o \
+	meters.o \
+	net.o \
+	object.o \
+	p38.o \
+	p38w.o \
+	truck.o \
+	uflight.o
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJS) $(LDLIBS)
+
+.c.o:
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+
+clean:
+	rm -f $(OBJS) $(TARGET)

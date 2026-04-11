@@ -19,11 +19,35 @@ cmake --build build -j4
 ./build/oldflight
 ```
 
-The new CMake build is the intended path for multiplatform support.
+The new CMake build is the intended path for modern multiplatform support.
 
 - **macOS**: uses system OpenGL plus the GLUT framework
 - **Windows**: targets OpenGL32 + GLU + freeglut/GLUT + WinSock
 - **Linux**: targets OpenGL + GLU + freeglut/GLUT
+
+## Vintage Unix build paths
+
+For older Unix workstations, use the conservative makefiles instead of CMake.
+
+### SGI / IRIX style build
+
+```bash
+make -f Makefile.sgi
+```
+
+### Sun / Solaris style build
+
+```bash
+make -f Makefile.sun
+```
+
+### Generic Unix / Mesa-GLUT build
+
+```bash
+make -f Makefile.unix
+```
+
+These makefiles intentionally avoid CMake and modern dependency-generation flags so the code stays friendlier to older toolchains.
 
 ### Windows notes
 
@@ -101,9 +125,12 @@ This makes the replay planes loaded from `-i` visible to other players on the LA
 Already done:
 
 - Added a CMake build alongside the legacy macOS Makefile
-- Switched OpenGL/GLUT headers to platform-aware includes
+- Added conservative Unix makefiles for SGI, Sun, and generic Unix builds
+- Switched OpenGL/GLUT headers to platform-aware includes without breaking classic `<GL/...>` paths
 - Guarded several POSIX-only includes for non-Windows builds
 - Guarded MSVC warning pragmas so Clang/GCC stop tripping over them
+- Removed several C99-style loop declarations from core files to stay closer to older C compilers
+- Replaced a few portability-hostile bits such as raw `#pragma pack(push,1)` assumptions
 
 Still expected before a polished Windows release:
 
@@ -111,6 +138,7 @@ Still expected before a polished Windows release:
 - Possible fixes for any remaining socket/time API differences under MSVC
 - Packaging freeglut DLL/runtime expectations for distribution
 - Cleanup of old warning debt in legacy headers/source
+- Real compile tests on actual IRIX/Solaris hardware or emulators, because vintage C compilers are notoriously temperamental
 
 ## Notes
 

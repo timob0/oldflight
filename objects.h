@@ -110,7 +110,7 @@
 #define COCKPIT		9092
 #define BUILDINGS_OFFSET 10000
 
-typedef struct gameState gameState;
+struct gameState;
 
 void make_my_building(int obj, int col, int llx, int lly, int llz, int dx, int dy, int dz, float segments);
 void make_house();
@@ -120,5 +120,5 @@ void init_light(float sunpos);
 void free_camera(struct gameState *gs);
 void make_textures_cube();
 void create_pattern();
-void make_mountain_zone(int x, int y, int size, gameState *gs);
+void make_mountain_zone(int x, int y, int size, struct gameState *gs);
 

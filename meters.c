@@ -422,10 +422,11 @@ void create_g_metter() {
 }
 
 void create_heading() {
+	int i;
 	glNewList(OBJ_HEADING_METER,GL_COMPILE);
 	setColor(white);
 	float sin, cos, r;
-	for (int i = 0; i < 3600; i += 100) {
+	for (i = 0; i < 3600; i += 100) {
 		gl_sincos((float) i, &sin, &cos);
 		glBegin(GL_LINE_STRIP);
 		glVertex2f(100.0f * sin, 100.0f * cos);
@@ -1033,9 +1034,10 @@ void draw_hud(gameState *gs, plane *pp, int sc_width, int sc_height, float X_ADJ
 	gl_print("8", -20000, 15000);
 	gl_print("A", 3000, 34000);
 
-	// Add other planes
+	/* Add other planes */
 	if (gs->number_planes > 1) {
-		for (int rpi = 1; rpi < gs->number_planes; rpi++) {
+		int rpi;
+		for (rpi = 1; rpi < gs->number_planes; rpi++) {
                 	Plane rp = &gs->planes[rpi];
                 	if (!rp->alive) continue;
 			gl_print(rp->myname, rp->x, rp->z);

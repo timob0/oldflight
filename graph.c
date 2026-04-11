@@ -90,9 +90,10 @@ void set_view_screen(double real_fov, int w, int h , int top) {
 }
 void gl_print_matrix(float m[4][4], float ystart) {
 	char string[255];
+	int o;
 	glPushMatrix();
 	glLoadIdentity();
-	for (int o = 0; o < 4; o++) {
+	for (o = 0; o < 4; o++) {
 		sprintf(string, "MAT[%d]=[%f,%f,%f,%f]", o, m[o][0], m[o][1], m[o][2],
 			m[o][3]);
 		gl_print(string, -1.0f, ystart -= .05f);
@@ -101,10 +102,12 @@ void gl_print_matrix(float m[4][4], float ystart) {
 }
 void gl_print(const char* str, float x, float y) {
 	int w;
+	int len;
+	int i;
 	w = glutBitmapLength(GLUT_BITMAP_8_BY_13, (const unsigned char *)str);
 	glRasterPos2f(x, y);
-	int len = (int)strlen(str);
-	for (int i = 0; i < len; i++) {
+	len = (int)strlen(str);
+	for (i = 0; i < len; i++) {
 		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, str[i]);
 	}
 	(void)w;
