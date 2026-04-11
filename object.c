@@ -84,15 +84,16 @@ void make_house() {
 	glEndList();
 }
 void make_my_building(int obj, int col, int llx, int lly, int llz, int dx, int dy, int dz, float segments) {
-	
-	
-	
-
-	float segh = dy / segments;
-	float windowsHigh = segh/ segments;
-	
 	float by = 0.0f;
+	float segh = dy / segments;
+	float windowsHigh = segh / segments;
 	float wy = segh - windowsHigh;
+	float top[][3] = {
+		llx + 0,	lly,	llz + 0,
+		llx + 0,	lly,	llz + dz,
+		llx + dx,	lly,	llz + dz,
+		llx + dx,	lly,	llz + 0
+	};
 	if (segments == 1) {
 		wy = segh;
 	}
@@ -188,12 +189,10 @@ void make_my_building(int obj, int col, int llx, int lly, int llz, int dx, int d
 	if (segments == 1) {
 		by += wy;
 	}
-	float top[][3] = {
-		llx + 0,	lly + by,	llz + 0,
-		llx + 0,	lly + by,	llz + dz,
-		llx + dx,	lly + by,	llz + dz,
-		llx + dx,	lly + by,	llz + 0
-	};
+	top[0][1] = lly + by;
+	top[1][1] = lly + by;
+	top[2][1] = lly + by;
+	top[3][1] = lly + by;
 	setColor(col);
 	draw_poly(top, 4, 0);
 	glDisable(GL_NORMALIZE);
@@ -205,17 +204,17 @@ void make_tree() {
 	float triangleAmount = 5.0f; //# of triangles used to draw circle
 	int flow = 0;
 	float x, y, z;
+	GLfloat twicePi = 2.0f * M_PI;
+	GLfloat rradius = 10.0f;
+	float inc = 2.0f*M_PI / triangleAmount;
+	int pass = 0;
 	x = 0;
 	y = 10+25;
 	z = 0;
 
-	GLfloat twicePi = 2.0f * M_PI;
-	GLfloat rradius = 10.0f;
-	float inc = 2.0f*M_PI / triangleAmount;
 	glNewList(TREE,GL_COMPILE);
 	glEnable(GL_NORMALIZE);
 	setColor(lime0);
-	int pass = 0;
 	for (i = 0; i <= 2.0f*M_PI; i+=inc) {
 		switch (pass % 3) {
 		case 0:

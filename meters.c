@@ -423,9 +423,9 @@ void create_g_metter() {
 
 void create_heading() {
 	int i;
+	float sin, cos, r;
 	glNewList(OBJ_HEADING_METER,GL_COMPILE);
 	setColor(white);
-	float sin, cos, r;
 	for (i = 0; i < 3600; i += 100) {
 		gl_sincos((float) i, &sin, &cos);
 		glBegin(GL_LINE_STRIP);
@@ -478,11 +478,11 @@ void create_heading() {
 
 void draw_cockpit(plane *pp, GLubyte *halftone, int sc_width, int sc_height, float X_ADJUST, float Y_ADJUST) {
 
+	float YMIDDLE = sc_height / 2;
+	float XMIDDLE = sc_width / 2;
 	if (glIsList(COCKPIT)) {
 		glDeleteLists(COCKPIT, 1);
 	}
-	float YMIDDLE = sc_height / 2;
-	float XMIDDLE = sc_width / 2;
 	glNewList(COCKPIT, GL_COMPILE);
 
 	glPushMatrix();
@@ -548,6 +548,9 @@ void draw_hud(gameState *gs, plane *pp, int sc_width, int sc_height, float X_ADJ
 	float r;
 	float sin;
 	float cos;
+	float k;
+	float rscale = 0.002f;
+	int planey = pp->y;
 	char charbuff[255];
 	float vv = pp->climbspeed;
 	float rhaws[][2] = {	/* 20 point unit circle	*/
@@ -666,12 +669,10 @@ void draw_hud(gameState *gs, plane *pp, int sc_width, int sc_height, float X_ADJ
 	}
 	y -= 24;
 	gl_print("R", x - 14, y + 4);
-
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glRects(x, y - 2, x + 60, y + 14);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	int planey = pp->y;
 	if (planey >= 1000) {
 		sprintf(charbuff, "%2d,%03d", planey / 1000, planey % 1000);
 	}
@@ -707,7 +708,6 @@ void draw_hud(gameState *gs, plane *pp, int sc_width, int sc_height, float X_ADJ
 
 	glPushMatrix();
 
-	float k;
 	k = -57.3 * (sc_height + 1) / 36.0;	/* screen is 36 degrees */
 	glTranslatef(k * pp->vx / pp->vz, k * pp->vy / pp->vz, 0.0);
 
@@ -1017,7 +1017,6 @@ void draw_hud(gameState *gs, plane *pp, int sc_width, int sc_height, float X_ADJ
 
 
 
-	float rscale=0.002f;
 	glCallList(RADAR);
 	glPushMatrix();
 	glLoadIdentity();

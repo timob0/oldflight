@@ -304,9 +304,9 @@ void special_key(int k, int x, int y) {
 	case GLUT_KEY_F1:
 		lgs->fog = !lgs->fog;
 		if (lgs->fog) {
-			glEnable(GL_FOG);
 			GLfloat fogcolor[4] = { 0.5, 0.5, 0.5, 1 };
 			GLint fogmode = GL_EXP;
+			glEnable(GL_FOG);
 			glFogi(GL_FOG_MODE, fogmode);
 			glFogfv(GL_FOG_COLOR, fogcolor);
 			glFogf(GL_FOG_DENSITY, 0.000007);
@@ -532,6 +532,7 @@ void visible(int vis) {
 
 void flight_simulation() {
 	int zetimer1, zetimer2;
+	int w, h;
 	if (lgs->sts == SIMULATION) {
 		if (!help_overlay) {
 			lgs->planes[0] = *lpp;
@@ -597,8 +598,8 @@ void flight_simulation() {
 			draw_cockpit(lpp, halftone, XMAXSCREEN, YMAXSCREEN, X_ADJUST, Y_ADJUST);
 			glCallList(COCKPIT);
 			
-			int w = XMAXSCREEN - 1;
-			int h = YMAXSCREEN / 2 - 1;
+			w = XMAXSCREEN - 1;
+			h = YMAXSCREEN / 2 - 1;
 			set_view_screen(lgs->real_fov, w, h, h);
 			draw_game(lgs, lpp);
 		}
@@ -678,6 +679,9 @@ void flight_demo_simulation(int va) {
 	}
 }
 void init_game(unsigned char k) {	
+	float lmodel_LVW[] = { 0.5 };
+	float lmodel_ambient[] = { 0.02, 0.02, 0.02, 1.0 };
+	float lmodel_TWO[] = { GL_TRUE };
 	free_memory();
 	glDisable(GL_LIGHT0);
 	glDisable(GL_LIGHT1);
@@ -685,9 +689,6 @@ void init_game(unsigned char k) {
 	glDisable(GL_LIGHT3);
 
 	glEnable(GL_LIGHT0);
-	float lmodel_LVW[] = { 0.5 };
-	float lmodel_ambient[] = { 0.02, 0.02, 0.02, 1.0 };
-	float lmodel_TWO[] = { GL_TRUE };
 
 	glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, lmodel_LVW);
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);

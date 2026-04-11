@@ -1096,47 +1096,49 @@ void simulation(struct gameState* gs, struct plane* pp, int msx, int msy, int XM
 			itemp += mrandom(pp->wing_stall *2);
 			elevtemp += mrandom(pp->wing_stall * 2);
 		}
-		pp->elevation_speedf += itemp;
-		float aztemp;
-		temp = pp->rudder * pp->vz - (2.0f*gs->tps/20.0f) * pp->vx;
-		if (pp->on_ground) {
-			itemp = (int)(16.0f * temp);
-			if (itemp < -MAX_TURNRATE || itemp > MAX_TURNRATE) {
-				/* clip turn rate	*/
-				if (itemp < 0) {		
-					itemp = -MAX_TURNRATE;
+		{
+			float aztemp;
+			pp->elevation_speedf += itemp;
+			temp = pp->rudder * pp->vz - (2.0f*gs->tps/20.0f) * pp->vx;
+			if (pp->on_ground) {
+				itemp = (int)(16.0f * temp);
+				if (itemp < -MAX_TURNRATE || itemp > MAX_TURNRATE) {
+					/* clip turn rate	*/
+					if (itemp < 0) {		
+						itemp = -MAX_TURNRATE;
+					}
+					else {
+						itemp = MAX_TURNRATE;
+					}
+					/* decrease with velocity */
+					if (fabs(pp->vz) > 10.0f / gs->tps) {
+						/* skid effect */
+						temp = 0.4f * gs->tps * (pp->rudder * pp->vz - .75f); 
+						if (temp < -MAX_TURNRATE || temp > MAX_TURNRATE) {
+							temp = (float) itemp;
+						}
+						itemp -= (int)temp;
+					}
+				}
+				temp = (float)itemp;
+			} else {
+				itemp = (int)temp;	/* itemp is desired azimuth speed	*/
+			}
+			
+			aztemp = temp;
+			/* itemp is now desired-actual		*/
+			itemp -= (int) pp->azimuth_speedf;	
+			aztemp -= pp->azimuth_speedf;
+			if (itemp != 0) {
+				if (itemp >= DELAY || itemp <= -DELAY) {
+					itemp /= DELAY;
 				}
 				else {
-					itemp = MAX_TURNRATE;
-				}
-				/* decrease with velocity */
-				if (fabs(pp->vz) > 10.0f / gs->tps) {
-					/* skid effect */
-					temp = 0.4f * gs->tps * (pp->rudder * pp->vz - .75f); 
-					if (temp < -MAX_TURNRATE || temp > MAX_TURNRATE) {
-						temp = (float) itemp;
-					}
-					itemp -= (int)temp;
+					itemp = itemp > 0 ? 1 : -1;
 				}
 			}
-			temp = (float)itemp;
-		} else {
-			itemp = (int)temp;	/* itemp is desired azimuth speed	*/
+			pp->azimuth_speedf += itemp;
 		}
-		
-		aztemp = temp;
-		/* itemp is now desired-actual		*/
-		itemp -= (int) pp->azimuth_speedf;	
-		aztemp -= pp->azimuth_speedf;
-		if (itemp != 0) {
-			if (itemp >= DELAY || itemp <= -DELAY) {
-				itemp /= DELAY;
-			}
-			else {
-				itemp = itemp > 0 ? 1 : -1;
-			}
-		}
-		pp->azimuth_speedf += itemp;
 		if (pp->on_ground) {
 			/* dont allow negative pitch unless positive elevation	*/
 			if (pp->elevation_speedf < 0) {
@@ -1178,9 +1180,6 @@ void simulation(struct gameState* gs, struct plane* pp, int msx, int msy, int XM
 		/* analyze new ptw	*/
 		temp = 0.0f;
 		pp->elevationf = -asinf(pp->ptw[2][1]) / M_PI *1800.0f;
-		
-		float ascos = 0.0f;
-
 		temp = cosf(pp->elevationf / 1800.0f * M_PI);
 		
 		if (temp != 0.0) {
@@ -1467,8 +1466,8 @@ void simulation(struct gameState* gs, struct plane* pp, int msx, int msy, int XM
 		pp->vx += pp->ax;	
 		pp->vz += pp->az;
 		if (pp->on_ground && pp->status > MEXPLODE) {
-			temp = 0.0f;
 			float mcos;
+			temp = 0.0f;
 			pp->vx = 0.0;
 			gl_sincos(pp->elevationf, &temp, &mcos);
 			temp = pp->vz * temp / mcos;

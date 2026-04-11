@@ -80,6 +80,8 @@ static GLuint load_ppm_texture(const char *path)
     unsigned char *rgba = NULL;
     GLuint tex = 0;
     size_t pixels;
+    int c;
+    size_t i;
 
     fp = fopen(path, "rb");
     if (!fp) return 0;
@@ -87,7 +89,7 @@ static GLuint load_ppm_texture(const char *path)
         fclose(fp);
         return 0;
     }
-    int c = fgetc(fp);
+    c = fgetc(fp);
     while (c == '#') {
         while (c != '\n' && c != EOF) c = fgetc(fp);
         c = fgetc(fp);
@@ -110,7 +112,7 @@ static GLuint load_ppm_texture(const char *path)
     }
     fclose(fp);
 
-    for (size_t i = 0; i < pixels; i++) {
+    for (i = 0; i < pixels; i++) {
         rgba[i * 4 + 0] = rgb[i * 3 + 0];
         rgba[i * 4 + 1] = rgb[i * 3 + 1];
         rgba[i * 4 + 2] = rgb[i * 3 + 2];

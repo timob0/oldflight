@@ -357,15 +357,8 @@ void draw_shadow(Plane pp, int nnear)
 	if (pp) {
 		glPushMatrix();
 		glMultMatrixf((GLfloat*)shadow_matrix);
-		if (pp->ptw)
-			// pre-cat ptw
-			glMultMatrixf((GLfloat*)pp->ptw);
-		else {
-			glTranslatef(pp->x, pp->y, pp->z);
-			glRotatef(.1f * (pp->azimuthf), 0, 1, 0);
-			glRotatef(.1f * (pp->elevationf), 1, 0, 0);
-			glRotatef(.1f * (pp->twist), 0, 0, 1);
-		}
+		/* pre-cat ptw */
+		glMultMatrixf((GLfloat*)pp->ptw);
 		/* shadow object	*/
 		glCallList(pp->type + (nnear ? 9 : 110));
 		glPopMatrix();
