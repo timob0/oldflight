@@ -4,6 +4,8 @@
 
 #include "flight.h"
 
+GLuint texID[3];
+
 void make_house() {
 	float murnort[][3] = {
 		4,0,4,
