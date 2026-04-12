@@ -1171,10 +1171,15 @@ void simulation(struct gameState* gs, struct plane* pp, int msx, int msy, int XM
 			rotateM(pp->ptw, pp->elevationf, 1, 0, 0);
 			rotateM(pp->ptw, pp->twist, 0, 0, 1);
 		}
-		translateM(pp->ptw, pp->vx, pp->vy, pp->vz);
-		if (round(pp->azimuth_speedf) != 0) rotateM(pp->ptw, round(pp->azimuth_speedf), 0, 1, 0);
-		if (round(pp->elevation_speedf) != 0) rotateM(pp->ptw, round(pp->elevation_speedf), 1, 0, 0);
-		if (round(pp->roll_speed) != 0) rotateM(pp->ptw, round(pp->roll_speed), 0, 0, 1);
+		{
+			int azimuth_step = iroundf(pp->azimuth_speedf);
+			int elevation_step = iroundf(pp->elevation_speedf);
+			int roll_step = iroundf(pp->roll_speed);
+			translateM(pp->ptw, pp->vx, pp->vy, pp->vz);
+			if (azimuth_step != 0) rotateM(pp->ptw, (float)azimuth_step, 0, 1, 0);
+			if (elevation_step != 0) rotateM(pp->ptw, (float)elevation_step, 1, 0, 0);
+			if (roll_step != 0) rotateM(pp->ptw, (float)roll_step, 0, 0, 1);
+		}
 
 
 		/* analyze new ptw	*/

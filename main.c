@@ -246,7 +246,7 @@ void draw_presentation(void) {
 	 glRasterPos2i(XMAXSCREEN - 400, 64);
 	 //glGetFloatv(GL_CURRENT_RASTER_POSITION_VALID, c);
 	// 354x92px
-	 glBitmap(354, 92, 0, 0, 0.0, 0, sgi);
+	 glBitmap(354, 92, 0, 0, 0.0, 0, sgi_bitmap);
 
 	glFlush();
 
@@ -812,7 +812,9 @@ void init_presentation(int va) {
 	glutDisplayFunc(draw_presentation);
 	glutIdleFunc(draw_presentation);
 	glutReshapeFunc(reshape_2d);
+#ifdef GLUT_KEY_REPEAT_ON
 	glutSetKeyRepeat(GLUT_KEY_REPEAT_ON);
+#endif
 	glutKeyboardFunc(presentation_key);
 	glutTimerFunc(50 * 1000, init_demo, 0);
 }
@@ -852,7 +854,9 @@ void init_3D_viewer(int va) {
 	glutDisplayFunc(draw_3D_viewer);
 	glutIdleFunc(idle);
 	glutReshapeFunc(reshape_3d);
+#ifdef GLUT_KEY_REPEAT_ON
 	glutSetKeyRepeat(GLUT_KEY_REPEAT_ON);
+#endif
 	glutKeyboardFunc(object_viewer_key);
 	glutSpecialFunc(object_special_viewerKey);
 }

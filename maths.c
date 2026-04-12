@@ -1,6 +1,13 @@
 #include "maths.h"
 #include <math.h>
 
+int iroundf(float value) {
+	if (value >= 0.0f) {
+		return (int)floorf(value + 0.5f);
+	}
+	return (int)ceilf(value - 0.5f);
+}
+
 void gl_sincos(float a, float* b, float* c) {
 	if (b != NULL) {
 		*b = sinf((a) / 1800.0f * M_PI);

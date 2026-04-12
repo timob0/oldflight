@@ -826,8 +826,8 @@ void update_ground_vehicles(gameState *gs) {
 		}
 		b->fx += b->vx;
 		b->fz += b->vz;
-		b->cx = (int)roundf(b->fx);
-		b->cz = (int)roundf(b->fz);
+		b->cx = iroundf(b->fx);
+		b->cz = iroundf(b->fz);
 		while (b->heading < 0.0f) b->heading += 360.0f;
 		while (b->heading >= 360.0f) b->heading -= 360.0f;
 	}

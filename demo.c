@@ -929,7 +929,7 @@ void drawWaterMark(void) {
 	float c[4];
 	glGetFloatv(GL_CURRENT_RASTER_POSITION_VALID, c);
 	// 354x92px
-	glBitmap(354, 92, 0, 0, 0.0, 0, sgi);
+	glBitmap(354, 92, 0, 0, 0.0, 0, sgi_bitmap);
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);

@@ -74,6 +74,7 @@ void normalizeVector(Vector *v);
 void rotateVector(Vector *v, float yaw, float pitch);
 void crossVector(Vector *a, Vector *b);
 int mrandom(int maxr);
+int iroundf(float value);
 
 static matrix4x4f identity_4x4f = {
 	1, 0, 0, 0,
