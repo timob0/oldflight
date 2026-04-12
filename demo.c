@@ -1,6 +1,9 @@
 #include "demo.h"
 #include "graph.h"
 #include "flight.h"
+#if defined(__MINGW32__)
+#include <sys/timeb.h>
+#endif
 
 #ifdef OLDCODE
 
