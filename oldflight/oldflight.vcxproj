@@ -97,6 +97,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -113,6 +114,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -130,6 +132,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>false</DataExecutionPrevention>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,31 +149,40 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\bitmap.h" />
+    <ClInclude Include="..\balloon_mesh.h" />
+    <ClInclude Include="..\blimp_mesh.h" />
     <ClInclude Include="..\colors.h" />
     <ClInclude Include="..\demo.h" />
     <ClInclude Include="..\f16_defs.h" />
     <ClInclude Include="..\f16_points.h" />
     <ClInclude Include="..\flight.h" />
     <ClInclude Include="..\graph.h" />
+    <ClInclude Include="..\helicopter_mesh.h" />
     <ClInclude Include="..\irisgl.h" />
     <ClInclude Include="..\main.h" />
     <ClInclude Include="..\maths.h" />
     <ClInclude Include="..\meters.h" />
+    <ClInclude Include="..\net.h" />
     <ClInclude Include="..\objects.h" />
     <ClInclude Include="..\p38.h" />
     <ClInclude Include="..\p38_points.h" />
     <ClInclude Include="..\planes.h" />
     <ClInclude Include="..\sgilogo.h" />
+    <ClInclude Include="..\truck_mesh.h" />
     <ClInclude Include="..\uflight.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\b747.c" />
+    <ClCompile Include="..\balloon.c" />
+    <ClCompile Include="..\blimp.c" />
     <ClCompile Include="..\c150.c" />
     <ClCompile Include="..\color.c" />
+    <ClCompile Include="..\comm.c" />
     <ClCompile Include="..\demo.c" />
     <ClCompile Include="..\draw_logo.c" />
     <ClCompile Include="..\f15.c" />
@@ -179,13 +191,16 @@
     <ClCompile Include="..\f18.c" />
     <ClCompile Include="..\flight.c" />
     <ClCompile Include="..\graph.c" />
+    <ClCompile Include="..\helicopter.c" />
     <ClCompile Include="..\irisgl.c" />
     <ClCompile Include="..\main.c" />
     <ClCompile Include="..\maths.c" />
     <ClCompile Include="..\meters.c" />
+    <ClCompile Include="..\net.c" />
     <ClCompile Include="..\object.c" />
     <ClCompile Include="..\p38.c" />
     <ClCompile Include="..\p38w.c" />
+    <ClCompile Include="..\truck.c" />
     <ClCompile Include="..\uflight.c" />
   </ItemGroup>
   <ItemGroup>

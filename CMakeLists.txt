@@ -9,7 +9,9 @@ file(GLOB OLDLIGHT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
 add_executable(oldflight ${OLDLIGHT_SOURCES})
 target_include_directories(oldflight PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_compile_definitions(oldflight PRIVATE $<$<PLATFORM_ID:Windows>:W32>)
+target_compile_definitions(oldflight PRIVATE
+  $<$<PLATFORM_ID:Windows>:W32;WIN32_LEAN_AND_MEAN;NOMINMAX;_CRT_SECURE_NO_WARNINGS>
+)
 
 target_compile_options(oldflight PRIVATE
   $<$<C_COMPILER_ID:AppleClang,Clang,GNU>:-Wno-deprecated -Wno-visibility -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-comment -Wno-static-in-inline>

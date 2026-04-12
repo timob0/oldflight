@@ -16,14 +16,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#ifndef W32
+#ifdef W32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <process.h>
+#else
 #include <unistd.h>
-#endif
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#endif
 
 /* ------------------------------------------------------------------ */
 /* Wire packet                                                          */
@@ -70,8 +74,18 @@ typedef struct OFLT_PACKED {
 /* State                                                                */
 /* ------------------------------------------------------------------ */
 
-static int  recv_sock  = -1;
-static int  send_sock  = -1;
+#ifdef W32
+typedef SOCKET net_socket_t;
+typedef int net_socklen_t;
+#define NET_INVALID_SOCKET INVALID_SOCKET
+#else
+typedef int net_socket_t;
+typedef socklen_t net_socklen_t;
+#define NET_INVALID_SOCKET (-1)
+#endif
+
+static net_socket_t recv_sock  = NET_INVALID_SOCKET;
+static net_socket_t send_sock  = NET_INVALID_SOCKET;
 static int  net_active = 0;
 static unsigned int my_id = 0;
 
@@ -88,6 +102,65 @@ static NetPeer peers[NET_MAX_PEERS];
 /* ------------------------------------------------------------------ */
 /* Helpers                                                              */
 /* ------------------------------------------------------------------ */
+
+#ifdef W32
+static int net_platform_init(void)
+{
+    WSADATA wsaData;
+    return WSAStartup(MAKEWORD(2, 2), &wsaData);
+}
+
+static void net_platform_cleanup(void)
+{
+    WSACleanup();
+}
+
+static unsigned long net_process_id(void)
+{
+    return (unsigned long)_getpid();
+}
+
+static int net_set_nonblocking(net_socket_t sock)
+{
+    u_long mode = 1;
+    return ioctlsocket(sock, FIONBIO, &mode);
+}
+
+static void net_close_socket(net_socket_t *sock)
+{
+    if (*sock != NET_INVALID_SOCKET) {
+        closesocket(*sock);
+        *sock = NET_INVALID_SOCKET;
+    }
+}
+#else
+static int net_platform_init(void)
+{
+    return 0;
+}
+
+static void net_platform_cleanup(void)
+{
+}
+
+static unsigned long net_process_id(void)
+{
+    return (unsigned long)getpid();
+}
+
+static int net_set_nonblocking(net_socket_t sock)
+{
+    return fcntl(sock, F_SETFL, O_NONBLOCK);
+}
+
+static void net_close_socket(net_socket_t *sock)
+{
+    if (*sock != NET_INVALID_SOCKET) {
+        close(*sock);
+        *sock = NET_INVALID_SOCKET;
+    }
+}
+#endif
 
 static int peer_find(unsigned int id)
 {
@@ -116,18 +189,26 @@ int net_init(int port, const char *target_ip)
     int yes = 1;
 
     memset(peers, 0, sizeof(peers));
-    my_id = (unsigned int)(time(NULL) ^ (unsigned long)getpid());
+    if (net_platform_init() != 0) {
+        fprintf(stderr, "[net] platform init failed\n");
+        return -1;
+    }
+    my_id = (unsigned int)(time(NULL) ^ net_process_id());
 
     recv_sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (recv_sock < 0) { perror("[net] recv socket"); return -1; }
+    if (recv_sock == NET_INVALID_SOCKET) {
+        perror("[net] recv socket");
+        net_platform_cleanup();
+        return -1;
+    }
 
-    setsockopt(recv_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
+    setsockopt(recv_sock, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes));
 #ifdef SO_REUSEPORT
-    setsockopt(recv_sock, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes));
+    setsockopt(recv_sock, SOL_SOCKET, SO_REUSEPORT, (const char *)&yes, sizeof(yes));
 #endif
 
     /* Non-blocking receive */
-    fcntl(recv_sock, F_SETFL, O_NONBLOCK);
+    net_set_nonblocking(recv_sock);
 
     /* Bind on all interfaces so we receive incoming packets */
     {
@@ -138,19 +219,21 @@ int net_init(int port, const char *target_ip)
         bind_addr.sin_addr.s_addr = INADDR_ANY;
         if (bind(recv_sock, (struct sockaddr *)&bind_addr, sizeof(bind_addr)) < 0) {
             perror("[net] bind");
-            close(recv_sock); recv_sock = -1;
+            net_close_socket(&recv_sock);
+            net_platform_cleanup();
             return -1;
         }
     }
 
     send_sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (send_sock < 0) {
+    if (send_sock == NET_INVALID_SOCKET) {
         perror("[net] send socket");
-        close(recv_sock); recv_sock = -1;
+        net_close_socket(&recv_sock);
+        net_platform_cleanup();
         return -1;
     }
     if (!target_ip)
-        setsockopt(send_sock, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes));
+        setsockopt(send_sock, SOL_SOCKET, SO_BROADCAST, (const char *)&yes, sizeof(yes));
 
     /* Destination address */
     memset(&dest_addr, 0, sizeof(dest_addr));
@@ -169,8 +252,9 @@ int net_init(int port, const char *target_ip)
 
 void net_close(void)
 {
-    if (recv_sock >= 0) { close(recv_sock); recv_sock = -1; }
-    if (send_sock >= 0) { close(send_sock); send_sock = -1; }
+    net_close_socket(&recv_sock);
+    net_close_socket(&send_sock);
+    net_platform_cleanup();
     net_active = 0;
     fprintf(stderr, "[net] closed\n");
 }
@@ -204,7 +288,7 @@ int net_send_plane(const struct plane *p)
     pkt.rudder     = p->rudder;
     pkt.elevator   = p->elevator;
 
-    sendto(send_sock, &pkt, sizeof(pkt), 0,
+    sendto(send_sock, (const char *)&pkt, sizeof(pkt), 0,
            (struct sockaddr *)&dest_addr, sizeof(dest_addr));
     return 1;
 }
@@ -214,9 +298,10 @@ int net_recv(void)
 {
     NetPacket pkt;
     struct sockaddr_in src;
-    socklen_t srclen = sizeof(src);
+    net_socklen_t srclen = sizeof(src);
     int updates = 0;
     int i;
+    int n;
 
     if (!net_active) return 0;
 
@@ -229,8 +314,8 @@ int net_recv(void)
 
     /* Drain all waiting packets */
     for (;;) {
-        ssize_t n = recvfrom(recv_sock, &pkt, sizeof(pkt), 0,
-                             (struct sockaddr *)&src, &srclen);
+        n = (int)recvfrom(recv_sock, (char *)&pkt, sizeof(pkt), 0,
+                          (struct sockaddr *)&src, &srclen);
         if (n < 0) break;                          /* EAGAIN / done */
         if ((size_t)n < sizeof(pkt))   continue;   /* short packet   */
         if (pkt.magic != NET_MAGIC)    continue;   /* not ours       */

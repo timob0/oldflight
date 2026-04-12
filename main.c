@@ -843,15 +843,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 }
 #else
 int main(int argc, char *argv[]) {
-	main_start(argc, argv);
+	return main_start(argc, argv);
 }
 #endif
 
 int main_start(int argc, char *argv[]) {
 	parse_command_line(argc, argv);
 	glutInit(&argc, argv);
-	windows = glutCreateWindow("Flight");
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
+	windows = glutCreateWindow("Flight");
 
 	init_palette();
 	
