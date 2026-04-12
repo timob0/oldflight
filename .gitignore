@@ -6,3 +6,4 @@ obj/processed-korb-256.ppm
 build/
 build-vintage/
 build-vintage-strict/
+*.vcxproj.user

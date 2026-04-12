@@ -1512,6 +1512,8 @@ static void draw_all_planes(gameState *gs) {
 void draw_game(gameState * gs, plane *pp) {
 	plane *target;
 	glPolygonMode(GL_FRONT_AND_BACK, gs->polymod);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
 
 	// Depending on selected view, setup the camera
 	switch (gs->view_switch) {
