@@ -10,6 +10,29 @@ static int  net_port = 0;
 static char *net_host = NULL;
 static char lpp_name_override[NAME_LENGTH + 1] = {0};
 
+static void set_default_player_name(char *name, int len) {
+#ifdef W32
+	DWORD size;
+	if (len <= 0) {
+		return;
+	}
+	size = (DWORD)(len - 1);
+	if (GetComputerNameA(name, &size)) {
+		name[size] = '\0';
+		return;
+	}
+#else
+	if (len > 0 && gethostname(name, len - 1) == 0) {
+		name[len - 1] = '\0';
+		return;
+	}
+#endif
+	if (len > 0) {
+		strncpy(name, "plane", len - 1);
+		name[len - 1] = '\0';
+	}
+}
+
 static void parse_command_line(int argc, char *argv[]) {
 	int i;
 	for (i = 1; i < argc; i++) {
@@ -737,8 +760,7 @@ void init_game(unsigned char k) {
 				lpp->myname[NAME_LENGTH] = '\0';
 			}
 			else if (lpp->myname[0] == '\0') {
-				gethostname(lpp->myname, NAME_LENGTH);
-				lpp->myname[NAME_LENGTH] = '\0';
+				set_default_player_name(lpp->myname, NAME_LENGTH + 1);
 			}
 		}
 	}
