@@ -67,6 +67,13 @@ cmake --build build --config Release
 
 You will need a GLUT-compatible library installed, typically **freeglut**.
 
+### GitHub Actions Windows CI
+
+The repository includes `.github/workflows/windows-build.yml` to validate Windows builds in CI.
+
+- **MSVC job**: uses `vcpkg` with the included `vcpkg.json`
+- **MinGW job**: uses MSYS2 with `freeglut`
+
 ## Command line options
 
 ### Replay / airshow files
