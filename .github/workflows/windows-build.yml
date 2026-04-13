@@ -42,6 +42,24 @@ jobs:
         shell: pwsh
         run: cmake --build build-msvc --config Release --parallel
 
+      - name: Package artifact
+        shell: pwsh
+        run: |
+          $artifactDir = Join-Path $env:RUNNER_TEMP "oldflight-windows-msvc"
+          New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
+          Copy-Item "build-msvc/Release/oldflight.exe" $artifactDir
+          $freeglutDll = Join-Path $env:VCPKG_ROOT "installed/x64-windows/bin/freeglut.dll"
+          if (Test-Path $freeglutDll) {
+            Copy-Item $freeglutDll $artifactDir
+          }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: oldflight-windows-msvc
+          path: ${{ runner.temp }}/oldflight-windows-msvc
+          if-no-files-found: error
+
   windows-mingw:
     name: Windows MinGW (MSYS2)
     runs-on: windows-latest
@@ -68,3 +86,21 @@ jobs:
       - name: Build
         shell: msys2 {0}
         run: cmake --build build-mingw --parallel
+
+      - name: Package artifact
+        shell: msys2 {0}
+        run: |
+          mkdir -p "$RUNNER_TEMP/oldflight-windows-mingw"
+          cp build-mingw/oldflight.exe "$RUNNER_TEMP/oldflight-windows-mingw/"
+          for dll in /mingw64/bin/libfreeglut.dll /mingw64/bin/libgcc_s_seh-1.dll /mingw64/bin/libstdc++-6.dll /mingw64/bin/libwinpthread-1.dll; do
+            if [ -f "$dll" ]; then
+              cp "$dll" "$RUNNER_TEMP/oldflight-windows-mingw/"
+            fi
+          done
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: oldflight-windows-mingw
+          path: ${{ runner.temp }}/oldflight-windows-mingw
+          if-no-files-found: error
