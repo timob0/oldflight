@@ -1,4 +1,4 @@
-# oldflight
+# === oldflight ===
 
 A revived port of the classic SGI-era flight sim.
 
